@@ -86,7 +86,35 @@ class endpoints:
             return jsonify(users)
         except Exception as e:
             return str(e)
+        
+    
+    @app.route('/filterresult', methods=['POST'])
+    def filter_breweries():
+        data = request.json  # Assumes you're sending data as JSON from your React app
+
+        by_city = data.get('by_city')
+        by_type = data.get('by_type')
+        by_name = data.get('by_name')
+        print(by_city)
+        print(by_name)
+        print(by_type)
+        # Construct the query parameters
+        params = {
+            'by_city': by_city,
+            'by_type': by_type,
+            'by_name': by_name,
+        }
+
+        # Make a request to the Open Brewery Database API
+        base_url = 'https://api.openbrewerydb.org/v1/breweries'
+        response = requests.get(base_url, params=params)
+
+        if response.status_code == 200:
+            brewery_data = response.json()
+            return jsonify(brewery_data)
+        else:
+            return jsonify({'error': 'Failed to fetch data from the API'}), 500
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
