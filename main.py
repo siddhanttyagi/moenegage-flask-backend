@@ -60,7 +60,28 @@ class endpoints:
             return "User data inserted successfully."
         except Exception as e:
             return str(e)  
-             
+        
+    
+    @app.route('/api/login', methods=['POST'])
+    def login():
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+        connection = psycopg2.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Use a parameterized query to prevent SQL injection
+        query = "SELECT username FROM users WHERE username = %s AND password = %s"
+        cursor.execute(query, (username, password))
+
+        user = cursor.fetchone()
+
+        cursor.close()
+        connection.close() 
+        if user:
+            return 'success'
+        else:
+            return 'failed'
     @app.route('/newreview', methods=['POST'])
     def newreview():
         try:
